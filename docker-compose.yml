@@ -12,6 +12,7 @@ services:
       APP_BRAND_NAME: "${APP_BRAND_NAME:-Betta_Cyber}"
       APP_COMPANY_URL: "${APP_COMPANY_URL:-https://betta.gp}"
       CACHE_TTL_SECONDS: "${CACHE_TTL_SECONDS:-60}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-*}"
     ports:
       - "${API_PORT:-8002}:8002"
     restart: unless-stopped
@@ -27,7 +28,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: cql-hub-frontend
     environment:
-      API_BASE_URL: "http://localhost:${API_PORT:-8002}"
+      API_BASE_URL: "${API_BASE_URL:-http://localhost:8002}"
       GITHUB_REPO_URL: "https://github.com/${GITHUB_OWNER:-BettaCyber}/${GITHUB_REPO:-CQL-HUB}"
       COMPANY_URL: "${APP_COMPANY_URL:-https://betta.gp}"
     ports:

@@ -30,8 +30,8 @@ class CQLHub {
 
         // Runtime configuration
         this.appConfig = window.APP_CONFIG || {};
-        this.apiBaseUrl = this.appConfig.API_BASE_URL || 'http://localhost:8002';
-        this.githubRepoUrl = this.appConfig.GITHUB_REPO_URL || 'https://github.com/BettaCyber/CQL-HUB';
+        this.apiBaseUrl = this.resolveApiBaseUrl();
+        this.githubRepoUrl = this.resolveGithubRepoUrl();
         this.githubRawBaseUrl = this.githubRepoUrl.replace('https://github.com/', 'https://raw.githubusercontent.com/');
 
         // Lookup files properties
@@ -125,6 +125,30 @@ class CQLHub {
         this.currentView = 'queries';
 
         this.init();
+    }
+
+    resolveApiBaseUrl() {
+        const configuredValue = (this.appConfig.API_BASE_URL || '').trim();
+        if (configuredValue) {
+            return configuredValue.replace(/\/$/, '');
+        }
+
+        const hostname = window.location.hostname;
+        const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+        if (isLocalHost) {
+            return 'http://localhost:8002';
+        }
+
+        return `${window.location.origin}/api`;
+    }
+
+    resolveGithubRepoUrl() {
+        const configuredValue = (this.appConfig.GITHUB_REPO_URL || '').trim();
+        if (configuredValue) {
+            return configuredValue.replace(/\/$/, '');
+        }
+
+        return 'https://github.com/BettaCyber/CQL-HUB';
     }
 
     init() {

@@ -51,9 +51,10 @@ def get_submission_service() -> SubmissionService:
 
 
 app = FastAPI(title="CQL-HUB API", version="1.0.0")
+settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=list(settings.cors_allowed_origins),
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

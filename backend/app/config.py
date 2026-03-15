@@ -14,6 +14,7 @@ class Settings:
     cache_ttl_seconds: int
     app_brand_name: str
     app_company_url: str
+    cors_allowed_origins: tuple[str, ...]
     local_queries_dir: Path
     local_lookup_dir: Path
 
@@ -31,6 +32,11 @@ class Settings:
             cache_ttl_seconds=int(os.getenv("CACHE_TTL_SECONDS", "60")),
             app_brand_name=os.getenv("APP_BRAND_NAME", "Betta_Cyber"),
             app_company_url=os.getenv("APP_COMPANY_URL", "https://betta.gp"),
+            cors_allowed_origins=tuple(
+                origin.strip()
+                for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",")
+                if origin.strip()
+            ),
             local_queries_dir=Path(os.getenv("LOCAL_QUERIES_DIR", "/app/queries")),
             local_lookup_dir=Path(os.getenv("LOCAL_LOOKUP_DIR", "/app/lookup-files")),
         )

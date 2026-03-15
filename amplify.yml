@@ -1,0 +1,22 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - export API_BASE_URL="${API_BASE_URL:-/api}"
+        - export GITHUB_REPO_URL="${GITHUB_REPO_URL:-https://github.com/BettaCyber/CQL-HUB}"
+        - export COMPANY_URL="${COMPANY_URL:-https://betta.gp}"
+        - |
+          cat > frontend/config.js <<EOF
+          window.APP_CONFIG = {
+              API_BASE_URL: "${API_BASE_URL}",
+              GITHUB_REPO_URL: "${GITHUB_REPO_URL}",
+              COMPANY_URL: "${COMPANY_URL}"
+          };
+          EOF
+  artifacts:
+    baseDirectory: frontend
+    files:
+      - '**/*'
+  cache:
+    paths: []
