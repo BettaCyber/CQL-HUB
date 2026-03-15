@@ -32,6 +32,7 @@ class CQLHub {
         this.appConfig = window.APP_CONFIG || {};
         this.apiBaseUrl = this.appConfig.API_BASE_URL || 'http://localhost:8002';
         this.githubRepoUrl = this.appConfig.GITHUB_REPO_URL || 'https://github.com/BettaCyber/CQL-HUB';
+        this.githubRawBaseUrl = this.githubRepoUrl.replace('https://github.com/', 'https://raw.githubusercontent.com/');
 
         // Lookup files properties
         this.lookupFiles = [];
@@ -1332,7 +1333,7 @@ class CQLHub {
         const modal = document.getElementById('queryModal');
 
         // Populate modal content with inline GitHub link
-        const githubUrl = `${this.githubRepoUrl}/tree/main/queries/${query.filename}`;
+        const githubUrl = `${this.githubRepoUrl}/blob/main/queries/${encodeURIComponent(query.filename)}`;
         document.getElementById('modalTitle').innerHTML = `${this.escapeHtml(query.name)} <a href="${this.escapeHtml(githubUrl)}" target="_blank" rel="noopener noreferrer"><img src="github-mark-white.svg" alt="View on GitHub" class="github-logo"></a>`;
         
         // Set author in header
@@ -1451,7 +1452,6 @@ class CQLHub {
                         if (file) {
                             this.closeModal();
                             this.switchView('lookups');
-                            window.location.hash = 'lookups';
                             this.openLookupModal(file);
                         }
                     });
@@ -1477,7 +1477,7 @@ class CQLHub {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto'; // Restore background scrolling
         this.currentQuery = null;
-        history.replaceState(null, '', '#queries');
+        history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
     }
 
     updateModalButtonStates() {
@@ -2182,7 +2182,7 @@ class CQLHub {
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const view = tab.dataset.view;
-                window.location.hash = view;
+                history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
                 this.switchView(view);
             });
         });
@@ -2216,14 +2216,10 @@ class CQLHub {
     handleHashChange() {
         const hash = window.location.hash.replace('#', '');
 
-        if (hash === 'queries' || hash === '') {
+        if (hash === '') {
             this.closeModal();
             this.closeLookupModal();
             this.switchView('queries');
-        } else if (hash === 'lookups') {
-            this.closeModal();
-            this.closeLookupModal();
-            this.switchView('lookups');
         } else if (hash.startsWith('queries/')) {
             const slug = decodeURIComponent(hash.substring('queries/'.length));
             this.switchView('queries');
@@ -2272,7 +2268,11 @@ class CQLHub {
                 return;
             }
             const data = await response.json();
-            this.lookupFiles = Array.isArray(data) ? data : [];
+            this.lookupFiles = (Array.isArray(data) ? data : []).map(file => ({
+                ...file,
+                preview: Array.isArray(file.preview) ? file.preview : (Array.isArray(file.preview_rows) ? file.preview_rows : []),
+                url: file.url || `${this.githubRawBaseUrl}/main/lookup-files/${encodeURIComponent(file.name)}`
+            }));
             this.filteredLookupFiles = [...this.lookupFiles];
             this.buildCrossReferences();
             this.displayLookupFiles();
@@ -2481,7 +2481,7 @@ class CQLHub {
         const referencingQueries = this.lookupToQueries[file.name] || [];
 
         // Populate title with inline GitHub link
-        const lookupGithubUrl = `${this.githubRepoUrl}/tree/main/lookup-files/${file.name}`;
+        const lookupGithubUrl = `${this.githubRepoUrl}/blob/main/lookup-files/${encodeURIComponent(file.name)}`;
         document.getElementById('lookupModalTitle').innerHTML = `${this.escapeHtml(file.name)} <a href="${this.escapeHtml(lookupGithubUrl)}" target="_blank" rel="noopener noreferrer"><img src="github-mark-white.svg" alt="View on GitHub" class="github-logo"></a>`;
 
         document.getElementById('lookupModalDescription').textContent = file.description;
@@ -2524,7 +2524,6 @@ class CQLHub {
                     if (query) {
                         this.closeLookupModal();
                         this.switchView('queries');
-                        window.location.hash = 'queries';
                         this.openModal(query);
                     }
                 });
@@ -2574,7 +2573,7 @@ class CQLHub {
         const modal = document.getElementById('lookupModal');
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        history.replaceState(null, '', '#lookups');
+        history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
     }
 
     // Lookup Pagination Methods
