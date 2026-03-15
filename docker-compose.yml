@@ -22,7 +22,7 @@ services:
     container_name: cql-hub-frontend
     environment:
       API_BASE_URL: "http://localhost:${API_PORT:-8002}"
-      GITHUB_REPO_URL: "https://github.com/${GITHUB_OWNER:-Betta_Cyber}/${GITHUB_REPO:-CQL-HUB}"
+      GITHUB_REPO_URL: "https://github.com/${GITHUB_OWNER:-BettaCyber}/${GITHUB_REPO:-CQL-HUB}"
       COMPANY_URL: "${APP_COMPANY_URL:-https://betta.gp}"
     ports:
       - "${FRONTEND_PORT:-8080}:80"

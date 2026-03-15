@@ -25,7 +25,7 @@ class Settings:
     def from_env(cls) -> "Settings":
         return cls(
             github_token=os.getenv("GITHUB_TOKEN") or None,
-            github_owner=os.getenv("GITHUB_OWNER", "Betta_Cyber"),
+            github_owner=os.getenv("GITHUB_OWNER", "BettaCyber"),
             github_repo=os.getenv("GITHUB_REPO", "CQL-HUB"),
             github_base_branch=os.getenv("GITHUB_BASE_BRANCH", "main"),
             cache_ttl_seconds=int(os.getenv("CACHE_TTL_SECONDS", "60")),

@@ -31,7 +31,7 @@ class CQLHub {
         // Runtime configuration
         this.appConfig = window.APP_CONFIG || {};
         this.apiBaseUrl = this.appConfig.API_BASE_URL || 'http://localhost:8002';
-        this.githubRepoUrl = this.appConfig.GITHUB_REPO_URL || 'https://github.com/Betta_Cyber/CQL-HUB';
+        this.githubRepoUrl = this.appConfig.GITHUB_REPO_URL || 'https://github.com/BettaCyber/CQL-HUB';
 
         // Lookup files properties
         this.lookupFiles = [];

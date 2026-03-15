@@ -36,7 +36,7 @@ Backend:
 
 The application expects this repository to be hosted at:
 
-- `https://github.com/Betta_Cyber/CQL-HUB`
+- `https://github.com/BettaCyber/CQL-HUB`
 
 The backend reads published data from:
 
