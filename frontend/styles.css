@@ -453,6 +453,18 @@ audio, canvas, embed, iframe, img, object, svg, video {
     border: 1px solid var(--br-border-color);
 }
 
+.cached-data-banner {
+    margin: 1rem auto 0;
+    max-width: 1200px;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(118, 206, 43, 0.45);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(15, 20, 12, 0.95) 0%, rgba(10, 14, 9, 0.98) 100%);
+    color: #d7dfd0;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
 .results-header {
     display: flex;
     justify-content: space-between;
@@ -548,6 +560,37 @@ audio, canvas, embed, iframe, img, object, svg, video {
     border-color: var(--br-border-color-hover);
     border-color: var(--br-border-color-hover);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.loading-card {
+    pointer-events: none;
+}
+
+.loading-line {
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(31, 41, 55, 0.95) 0%, rgba(118, 206, 43, 0.18) 50%, rgba(31, 41, 55, 0.95) 100%);
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.2s ease-in-out infinite;
+    margin-bottom: 0.85rem;
+}
+
+.loading-line-title {
+    width: 62%;
+    height: 18px;
+}
+
+.loading-line-body {
+    width: 100%;
+}
+
+.loading-line-body.short {
+    width: 78%;
+}
+
+.loading-line-meta {
+    width: 42%;
+    margin-top: auto;
 }
 
 
@@ -1117,6 +1160,11 @@ footer p a:hover {
 @keyframes toastFadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+@keyframes skeletonPulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 /* Modal Styles */

@@ -43,6 +43,10 @@ class CQLHub {
         this.lookupFilters = { search: '' };
         this.queriesStorageKey = 'cqlhub_cached_queries_v1';
         this.lookupFilesStorageKey = 'cqlhub_cached_lookups_v1';
+        this.isLoadingQueries = false;
+        this.isLoadingLookupFiles = false;
+        this.isUsingCachedQueries = false;
+        this.isUsingCachedLookupFiles = false;
 
         // Cross-reference maps
         this.queryToLookups = {};
@@ -352,6 +356,8 @@ class CQLHub {
     }
 
     async loadQueries() {
+        this.isLoadingQueries = true;
+        this.displayQueries();
         try {
             const response = await fetch(`${this.apiBaseUrl}/queries`);
             if (!response.ok) {
@@ -380,6 +386,7 @@ class CQLHub {
             }
 
             this.filteredQueries = [...this.queries];
+            this.isUsingCachedQueries = false;
             this.writeJsonStorage(this.queriesStorageKey, this.queries);
             this.applySorting(); // Apply initial sorting
             this.populateFiltersFromAllQueries();
@@ -396,6 +403,7 @@ class CQLHub {
             console.error('Error loading queries:', error);
             if (this.queries.length > 0) {
                 this.filteredQueries = [...this.queries];
+                this.isUsingCachedQueries = true;
                 this.applySorting();
                 this.populateFiltersFromAllQueries();
                 this.displayQueries();
@@ -407,6 +415,7 @@ class CQLHub {
             if (Array.isArray(cachedQueries) && cachedQueries.length > 0) {
                 this.queries = cachedQueries;
                 this.filteredQueries = [...cachedQueries];
+                this.isUsingCachedQueries = true;
                 this.applySorting();
                 this.populateFiltersFromAllQueries();
                 this.displayQueries();
@@ -415,6 +424,10 @@ class CQLHub {
             }
 
             this.displayError('Failed to load queries from API. Please check your connection.');
+        } finally {
+            this.isLoadingQueries = false;
+            this.displayQueries();
+            this.updateCachedDataBanner();
         }
     }
 
@@ -1062,7 +1075,15 @@ class CQLHub {
     displayQueries() {
         const resultsContainer = document.getElementById('queryResults');
         const resultsCount = document.getElementById('resultsCount');
-        
+        if (!resultsContainer || !resultsCount) return;
+
+        if (this.isLoadingQueries && this.filteredQueries.length === 0) {
+            resultsCount.textContent = 'Loading queries...';
+            resultsContainer.innerHTML = this.renderLoadingSkeletons(6, 'query');
+            this.hidePagination();
+            return;
+        }
+
         resultsCount.textContent = `${this.filteredQueries.length} queries found`;
 
         if (this.filteredQueries.length === 0) {
@@ -2350,6 +2371,8 @@ class CQLHub {
 
     // Lookup Files Methods
     async loadLookupFiles() {
+        this.isLoadingLookupFiles = true;
+        this.displayLookupFiles();
         try {
             const response = await fetch(`${this.apiBaseUrl}/lookup-files`);
             if (!response.ok) {
@@ -2362,6 +2385,7 @@ class CQLHub {
                 url: file.url || `${this.githubRawBaseUrl}/main/lookup-files/${encodeURIComponent(file.name)}`
             }));
             this.filteredLookupFiles = [...this.lookupFiles];
+            this.isUsingCachedLookupFiles = false;
             this.writeJsonStorage(this.lookupFilesStorageKey, this.lookupFiles);
             this.buildCrossReferences();
             this.displayLookupFiles();
@@ -2370,6 +2394,7 @@ class CQLHub {
             console.error('Error loading lookup files:', error);
             if (this.lookupFiles.length > 0) {
                 this.filteredLookupFiles = [...this.lookupFiles];
+                this.isUsingCachedLookupFiles = true;
                 this.buildCrossReferences();
                 this.displayLookupFiles();
                 this.showToast('Using cached lookup files. Live refresh failed.', 'error', 5000);
@@ -2380,6 +2405,7 @@ class CQLHub {
             if (Array.isArray(cachedLookupFiles) && cachedLookupFiles.length > 0) {
                 this.lookupFiles = cachedLookupFiles;
                 this.filteredLookupFiles = [...cachedLookupFiles];
+                this.isUsingCachedLookupFiles = true;
                 this.buildCrossReferences();
                 this.displayLookupFiles();
                 this.showToast('Loaded cached lookup files. Live refresh failed.', 'error', 5000);
@@ -2389,6 +2415,10 @@ class CQLHub {
             this.lookupFiles = [];
             this.filteredLookupFiles = [];
             this.displayLookupFiles();
+        } finally {
+            this.isLoadingLookupFiles = false;
+            this.displayLookupFiles();
+            this.updateCachedDataBanner();
         }
     }
 
@@ -2437,6 +2467,13 @@ class CQLHub {
         const resultsCount = document.getElementById('lookupResultsCount');
 
         if (!resultsContainer || !resultsCount) return;
+
+        if (this.isLoadingLookupFiles && this.filteredLookupFiles.length === 0) {
+            resultsCount.textContent = 'Loading lookup files...';
+            resultsContainer.innerHTML = this.renderLoadingSkeletons(6, 'lookup');
+            this.hideLookupPagination();
+            return;
+        }
 
         resultsCount.textContent = `${this.filteredLookupFiles.length} lookup file${this.filteredLookupFiles.length !== 1 ? 's' : ''} found`;
 
@@ -2683,6 +2720,43 @@ class CQLHub {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
         history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    }
+
+    renderLoadingSkeletons(count, type) {
+        return Array.from({ length: count }, () => `
+            <div class="query-card loading-card loading-card-${type}" aria-hidden="true">
+                <div class="loading-line loading-line-title"></div>
+                <div class="loading-line loading-line-body"></div>
+                <div class="loading-line loading-line-body short"></div>
+                <div class="loading-line loading-line-meta"></div>
+            </div>
+        `).join('');
+    }
+
+    updateCachedDataBanner() {
+        const shouldShow = this.isUsingCachedQueries || this.isUsingCachedLookupFiles;
+        let banner = document.getElementById('cachedDataBanner');
+
+        if (!shouldShow) {
+            if (banner) banner.remove();
+            return;
+        }
+
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'cachedDataBanner';
+            banner.className = 'cached-data-banner';
+            const mainContainer = document.querySelector('.maincontainer');
+            const header = document.querySelector('header');
+            if (mainContainer && header) {
+                mainContainer.insertBefore(banner, header.nextSibling);
+            }
+        }
+
+        const datasets = [];
+        if (this.isUsingCachedQueries) datasets.push('queries');
+        if (this.isUsingCachedLookupFiles) datasets.push('lookup files');
+        banner.textContent = `Showing cached ${datasets.join(' and ')} while the live refresh is unavailable.`;
     }
 
     // Lookup Pagination Methods
