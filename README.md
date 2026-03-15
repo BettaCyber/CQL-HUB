@@ -37,11 +37,20 @@ Backend:
 Important local env values:
 
 - `DATA_SOURCE=local`
+- `SYNC_FROM_GITHUB=true`
+- `SYNC_INTERVAL_SECONDS=3600`
 - `API_BASE_URL=http://localhost:8002`
 - `ALLOWED_ORIGINS=*`
 - `CACHE_TTL_SECONDS=600`
 
 For on-prem Docker, the backend now reads from the bundled local `queries/` and `lookup-files/` directories by default. This avoids slow GitHub round-trips and makes first-load behavior faster and more stable.
+
+If you want newly approved GitHub queries and lookup files to appear automatically without rebuilding the backend image, enable the background sync:
+
+- `SYNC_FROM_GITHUB=true`
+- `SYNC_INTERVAL_SECONDS=3600`
+
+With that enabled, the backend keeps serving fast local files but refreshes them from GitHub on the configured interval and clears its cache after each sync.
 
 ## AWS Amplify frontend
 

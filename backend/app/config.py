@@ -12,6 +12,8 @@ class Settings:
     github_repo: str
     github_base_branch: str
     data_source: str
+    sync_from_github: bool
+    sync_interval_seconds: int
     cache_ttl_seconds: int
     app_brand_name: str
     app_company_url: str
@@ -25,12 +27,15 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
+        sync_from_github_value = os.getenv("SYNC_FROM_GITHUB", "false").strip().lower()
         return cls(
             github_token=os.getenv("GITHUB_TOKEN") or None,
             github_owner=os.getenv("GITHUB_OWNER", "BettaCyber"),
             github_repo=os.getenv("GITHUB_REPO", "CQL-HUB"),
             github_base_branch=os.getenv("GITHUB_BASE_BRANCH", "main"),
             data_source=os.getenv("DATA_SOURCE", "local").strip().lower(),
+            sync_from_github=sync_from_github_value in {"1", "true", "yes", "on"},
+            sync_interval_seconds=int(os.getenv("SYNC_INTERVAL_SECONDS", "3600")),
             cache_ttl_seconds=int(os.getenv("CACHE_TTL_SECONDS", "600")),
             app_brand_name=os.getenv("APP_BRAND_NAME", "Betta_Cyber"),
             app_company_url=os.getenv("APP_COMPANY_URL", "https://betta.gp"),

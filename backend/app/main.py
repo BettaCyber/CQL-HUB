@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from functools import lru_cache
 
 from fastapi import FastAPI, HTTPException, status
@@ -18,6 +19,7 @@ from .models import (
 )
 from .query_service import QueryService
 from .submission_service import SubmissionService
+from .sync_service import GitHubSyncService
 
 
 @lru_cache
@@ -50,7 +52,27 @@ def get_submission_service() -> SubmissionService:
     )
 
 
-app = FastAPI(title="CQL-HUB API", version="1.0.0")
+@lru_cache
+def get_sync_service() -> GitHubSyncService:
+    return GitHubSyncService(
+        get_github_client(),
+        get_query_service(),
+        get_lookup_service(),
+    )
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    sync_service = get_sync_service()
+    if settings.sync_from_github:
+        sync_service.start(settings.sync_interval_seconds)
+    try:
+        yield
+    finally:
+        await sync_service.stop()
+
+
+app = FastAPI(title="CQL-HUB API", version="1.0.0", lifespan=lifespan)
 settings = get_settings()
 app.add_middleware(
     CORSMiddleware,

@@ -14,9 +14,13 @@ For Docker/on-prem deployments, the backend should use local packaged data inste
 Recommended values:
 
 - `DATA_SOURCE=local`
+- `SYNC_FROM_GITHUB=true`
+- `SYNC_INTERVAL_SECONDS=3600`
 - `CACHE_TTL_SECONDS=600`
 
 This avoids intermittent empty states caused by upstream GitHub latency or failures and makes refresh behavior much faster.
+
+If `SYNC_FROM_GITHUB=true`, the backend still serves the local packaged files first, but it also refreshes `queries/` and `lookup-files/` from GitHub on a background interval. This is the recommended on-prem mode when you want newly approved GitHub content to show up automatically without rebuilding containers.
 
 ## Why Amplify Failed
 
@@ -56,6 +60,8 @@ Example `.env`:
 
 ```env
 DATA_SOURCE=local
+SYNC_FROM_GITHUB=true
+SYNC_INTERVAL_SECONDS=3600
 API_PORT=8002
 FRONTEND_PORT=8080
 API_BASE_URL=http://localhost:8002
