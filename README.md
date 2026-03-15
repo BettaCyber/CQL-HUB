@@ -4,7 +4,8 @@ Dockerized Betta_Cyber query hub application with:
 
 - a static frontend served by Nginx
 - a FastAPI backend
-- GitHub-backed query and lookup storage in this repository
+- local packaged query and lookup storage by default for Docker/on-prem
+- optional GitHub-backed query and lookup storage when explicitly enabled
 - PR-based submission flow for new queries and lookup files
 
 ## Structure
@@ -35,8 +36,12 @@ Backend:
 
 Important local env values:
 
+- `DATA_SOURCE=local`
 - `API_BASE_URL=http://localhost:8002`
 - `ALLOWED_ORIGINS=*`
+- `CACHE_TTL_SECONDS=600`
+
+For on-prem Docker, the backend now reads from the bundled local `queries/` and `lookup-files/` directories by default. This avoids slow GitHub round-trips and makes first-load behavior faster and more stable.
 
 ## AWS Amplify frontend
 

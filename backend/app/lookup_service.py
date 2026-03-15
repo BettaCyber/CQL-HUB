@@ -26,36 +26,39 @@ class LookupService:
         if self._cache_valid():
             return self._cache or []
 
-        try:
-            manifest = self._load_manifest()
-            manifest_map = {
-                item["name"]: item for item in manifest if isinstance(item, dict) and item.get("name")
-            }
-            files = self.github_client.list_files("lookup-files")
-            lookups: list[LookupFileResponse] = []
-
-            for file_info in files:
-                filename = file_info["name"]
-                if filename == "manifest.json" or not filename.lower().endswith(".csv"):
-                    continue
-
-                csv_text = self.github_client.get_file_text(file_info["path"])
-                columns, row_count, preview_rows = self._parse_csv(csv_text)
-                metadata = manifest_map.get(filename, {})
-                lookups.append(
-                    LookupFileResponse(
-                        name=filename,
-                        description=metadata.get("description", f"Lookup file {filename}"),
-                        author=metadata.get("author", self.settings.app_brand_name),
-                        columns=columns,
-                        row_count=row_count,
-                        preview_rows=preview_rows,
-                    )
-                )
-        except GitHubAPIError as exc:
-            if exc.status_code != 404:
-                raise
+        if self._should_use_local_data():
             lookups = self._load_local_lookup_files()
+        else:
+            try:
+                manifest = self._load_manifest()
+                manifest_map = {
+                    item["name"]: item for item in manifest if isinstance(item, dict) and item.get("name")
+                }
+                files = self.github_client.list_files("lookup-files")
+                lookups: list[LookupFileResponse] = []
+
+                for file_info in files:
+                    filename = file_info["name"]
+                    if filename == "manifest.json" or not filename.lower().endswith(".csv"):
+                        continue
+
+                    csv_text = self.github_client.get_file_text(file_info["path"])
+                    columns, row_count, preview_rows = self._parse_csv(csv_text)
+                    metadata = manifest_map.get(filename, {})
+                    lookups.append(
+                        LookupFileResponse(
+                            name=filename,
+                            description=metadata.get("description", f"Lookup file {filename}"),
+                            author=metadata.get("author", self.settings.app_brand_name),
+                            columns=columns,
+                            row_count=row_count,
+                            preview_rows=preview_rows,
+                        )
+                    )
+            except GitHubAPIError as exc:
+                if exc.status_code != 404:
+                    raise
+                lookups = self._load_local_lookup_files()
 
         lookups.sort(key=lambda item: item.name.lower())
         self._cache = lookups
@@ -69,6 +72,14 @@ class LookupService:
     def clear_cache(self) -> None:
         self._cache = None
         self._cache_expiry = datetime.now(timezone.utc)
+
+    def _should_use_local_data(self) -> bool:
+        source = self.settings.data_source
+        if source == "local":
+            return True
+        if source == "github":
+            return False
+        return self.settings.local_lookup_dir.exists() and any(self.settings.local_lookup_dir.glob("*.csv"))
 
     def load_manifest_text(self) -> str:
         return self.github_client.get_file_text("lookup-files/manifest.json")

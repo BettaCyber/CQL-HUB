@@ -41,6 +41,8 @@ class CQLHub {
         this.lookupCurrentPage = 1;
         this.lookupPerPage = 12;
         this.lookupFilters = { search: '' };
+        this.queriesStorageKey = 'cqlhub_cached_queries_v1';
+        this.lookupFilesStorageKey = 'cqlhub_cached_lookups_v1';
 
         // Cross-reference maps
         this.queryToLookups = {};
@@ -155,8 +157,47 @@ class CQLHub {
         this.loadRegionFromCookie();
         this.initNavigation();
         this.bindEvents();
+        this.hydrateCachedData();
         this.loadQueries();
         this.loadLookupFiles();
+    }
+
+    hydrateCachedData() {
+        const cachedQueries = this.readJsonStorage(this.queriesStorageKey, []);
+        if (Array.isArray(cachedQueries) && cachedQueries.length > 0) {
+            this.queries = cachedQueries;
+            this.filteredQueries = [...cachedQueries];
+            this.applySorting();
+            this.populateFiltersFromAllQueries();
+            this.displayQueries();
+        }
+
+        const cachedLookupFiles = this.readJsonStorage(this.lookupFilesStorageKey, []);
+        if (Array.isArray(cachedLookupFiles) && cachedLookupFiles.length > 0) {
+            this.lookupFiles = cachedLookupFiles;
+            this.filteredLookupFiles = [...cachedLookupFiles];
+            this.buildCrossReferences();
+            this.displayLookupFiles();
+        }
+    }
+
+    readJsonStorage(key, fallbackValue) {
+        try {
+            const rawValue = window.localStorage.getItem(key);
+            if (!rawValue) return fallbackValue;
+            return JSON.parse(rawValue);
+        } catch (error) {
+            console.warn(`Failed to read cached data for ${key}:`, error);
+            return fallbackValue;
+        }
+    }
+
+    writeJsonStorage(key, value) {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+            console.warn(`Failed to write cached data for ${key}:`, error);
+        }
     }
 
     loadRegionFromCookie() {
@@ -313,6 +354,9 @@ class CQLHub {
     async loadQueries() {
         try {
             const response = await fetch(`${this.apiBaseUrl}/queries`);
+            if (!response.ok) {
+                throw new Error(`Query request failed with status ${response.status}`);
+            }
             const data = await response.json();
             
             // Parse the new format - extract parsed_content from each query
@@ -336,6 +380,7 @@ class CQLHub {
             }
 
             this.filteredQueries = [...this.queries];
+            this.writeJsonStorage(this.queriesStorageKey, this.queries);
             this.applySorting(); // Apply initial sorting
             this.populateFiltersFromAllQueries();
             this.displayQueries();
@@ -349,6 +394,26 @@ class CQLHub {
             this.resolveDeepLink();
         } catch (error) {
             console.error('Error loading queries:', error);
+            if (this.queries.length > 0) {
+                this.filteredQueries = [...this.queries];
+                this.applySorting();
+                this.populateFiltersFromAllQueries();
+                this.displayQueries();
+                this.showToast('Using cached queries. Live refresh failed.', 'error', 5000);
+                return;
+            }
+
+            const cachedQueries = this.readJsonStorage(this.queriesStorageKey, []);
+            if (Array.isArray(cachedQueries) && cachedQueries.length > 0) {
+                this.queries = cachedQueries;
+                this.filteredQueries = [...cachedQueries];
+                this.applySorting();
+                this.populateFiltersFromAllQueries();
+                this.displayQueries();
+                this.showToast('Loaded cached queries. Live refresh failed.', 'error', 5000);
+                return;
+            }
+
             this.displayError('Failed to load queries from API. Please check your connection.');
         }
     }
@@ -2288,8 +2353,7 @@ class CQLHub {
         try {
             const response = await fetch(`${this.apiBaseUrl}/lookup-files`);
             if (!response.ok) {
-                this.lookupFiles = [];
-                return;
+                throw new Error(`Lookup request failed with status ${response.status}`);
             }
             const data = await response.json();
             this.lookupFiles = (Array.isArray(data) ? data : []).map(file => ({
@@ -2298,12 +2362,33 @@ class CQLHub {
                 url: file.url || `${this.githubRawBaseUrl}/main/lookup-files/${encodeURIComponent(file.name)}`
             }));
             this.filteredLookupFiles = [...this.lookupFiles];
+            this.writeJsonStorage(this.lookupFilesStorageKey, this.lookupFiles);
             this.buildCrossReferences();
             this.displayLookupFiles();
             this.resolveDeepLink();
         } catch (error) {
             console.error('Error loading lookup files:', error);
+            if (this.lookupFiles.length > 0) {
+                this.filteredLookupFiles = [...this.lookupFiles];
+                this.buildCrossReferences();
+                this.displayLookupFiles();
+                this.showToast('Using cached lookup files. Live refresh failed.', 'error', 5000);
+                return;
+            }
+
+            const cachedLookupFiles = this.readJsonStorage(this.lookupFilesStorageKey, []);
+            if (Array.isArray(cachedLookupFiles) && cachedLookupFiles.length > 0) {
+                this.lookupFiles = cachedLookupFiles;
+                this.filteredLookupFiles = [...cachedLookupFiles];
+                this.buildCrossReferences();
+                this.displayLookupFiles();
+                this.showToast('Loaded cached lookup files. Live refresh failed.', 'error', 5000);
+                return;
+            }
+
             this.lookupFiles = [];
+            this.filteredLookupFiles = [];
+            this.displayLookupFiles();
         }
     }
 

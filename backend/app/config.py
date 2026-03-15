@@ -11,6 +11,7 @@ class Settings:
     github_owner: str
     github_repo: str
     github_base_branch: str
+    data_source: str
     cache_ttl_seconds: int
     app_brand_name: str
     app_company_url: str
@@ -29,7 +30,8 @@ class Settings:
             github_owner=os.getenv("GITHUB_OWNER", "BettaCyber"),
             github_repo=os.getenv("GITHUB_REPO", "CQL-HUB"),
             github_base_branch=os.getenv("GITHUB_BASE_BRANCH", "main"),
-            cache_ttl_seconds=int(os.getenv("CACHE_TTL_SECONDS", "60")),
+            data_source=os.getenv("DATA_SOURCE", "local").strip().lower(),
+            cache_ttl_seconds=int(os.getenv("CACHE_TTL_SECONDS", "600")),
             app_brand_name=os.getenv("APP_BRAND_NAME", "Betta_Cyber"),
             app_company_url=os.getenv("APP_COMPANY_URL", "https://betta.gp"),
             cors_allowed_origins=tuple(

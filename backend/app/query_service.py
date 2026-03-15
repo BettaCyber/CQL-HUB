@@ -26,26 +26,29 @@ class QueryService:
             return QueriesResponse(queries=self._cache or {})
 
         queries: dict[str, QueryFilePayload] = {}
-        try:
-            query_files = self.github_client.list_files("queries")
-            for file_info in query_files:
-                filename = file_info["name"]
-                if not filename.lower().endswith((".yml", ".yaml")):
-                    continue
-                path = file_info["path"]
-                raw_yaml = self.github_client.get_file_text(path)
-                parsed = yaml.safe_load(raw_yaml) or {}
-                normalized = self._normalize_query(parsed)
-                created_date = self.github_client.get_file_commit_date(path)
-                queries[filename] = QueryFilePayload(
-                    filename=filename,
-                    created_date=created_date,
-                    parsed_content=normalized,
-                )
-        except GitHubAPIError as exc:
-            if exc.status_code != 404:
-                raise
+        if self._should_use_local_data():
             queries = self._load_local_queries()
+        else:
+            try:
+                query_files = self.github_client.list_files("queries")
+                for file_info in query_files:
+                    filename = file_info["name"]
+                    if not filename.lower().endswith((".yml", ".yaml")):
+                        continue
+                    path = file_info["path"]
+                    raw_yaml = self.github_client.get_file_text(path)
+                    parsed = yaml.safe_load(raw_yaml) or {}
+                    normalized = self._normalize_query(parsed)
+                    created_date = self.github_client.get_file_commit_date(path)
+                    queries[filename] = QueryFilePayload(
+                        filename=filename,
+                        created_date=created_date,
+                        parsed_content=normalized,
+                    )
+            except GitHubAPIError as exc:
+                if exc.status_code != 404:
+                    raise
+                queries = self._load_local_queries()
 
         self._cache = queries
         self._cache_expiry = datetime.now(timezone.utc) + timedelta(seconds=self.settings.cache_ttl_seconds)
@@ -146,6 +149,14 @@ class QueryService:
     def clear_cache(self) -> None:
         self._cache = None
         self._cache_expiry = datetime.now(timezone.utc)
+
+    def _should_use_local_data(self) -> bool:
+        source = self.settings.data_source
+        if source == "local":
+            return True
+        if source == "github":
+            return False
+        return self.settings.local_queries_dir.exists() and any(self.settings.local_queries_dir.glob("*.y*ml"))
 
     def _load_local_queries(self) -> dict[str, QueryFilePayload]:
         queries: dict[str, QueryFilePayload] = {}

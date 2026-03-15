@@ -9,6 +9,7 @@ services:
       GITHUB_OWNER: "${GITHUB_OWNER:-BettaCyber}"
       GITHUB_REPO: "${GITHUB_REPO:-CQL-HUB}"
       GITHUB_BASE_BRANCH: "${GITHUB_BASE_BRANCH:-main}"
+      DATA_SOURCE: "${DATA_SOURCE:-local}"
       APP_BRAND_NAME: "${APP_BRAND_NAME:-Betta_Cyber}"
       APP_COMPANY_URL: "${APP_COMPANY_URL:-https://betta.gp}"
       CACHE_TTL_SECONDS: "${CACHE_TTL_SECONDS:-60}"

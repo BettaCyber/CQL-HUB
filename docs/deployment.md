@@ -7,6 +7,17 @@ This project supports:
 - local Docker with frontend on `localhost:8080` and backend on `localhost:8002`
 - hosted frontend with a separately hosted backend
 
+## On-Prem Default Behavior
+
+For Docker/on-prem deployments, the backend should use local packaged data instead of calling GitHub for every page load.
+
+Recommended values:
+
+- `DATA_SOURCE=local`
+- `CACHE_TTL_SECONDS=600`
+
+This avoids intermittent empty states caused by upstream GitHub latency or failures and makes refresh behavior much faster.
+
 ## Why Amplify Failed
 
 Amplify deployed only the static frontend. The browser then tried to reach `http://localhost:8002`, which only works on the local machine. In a hosted deployment, the frontend must call a real public backend URL.
@@ -44,9 +55,11 @@ Use comma-separated values in `ALLOWED_ORIGINS` when more than one frontend orig
 Example `.env`:
 
 ```env
+DATA_SOURCE=local
 API_PORT=8002
 FRONTEND_PORT=8080
 API_BASE_URL=http://localhost:8002
+CACHE_TTL_SECONDS=600
 ALLOWED_ORIGINS=*
 ```
 
