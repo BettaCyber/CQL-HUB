@@ -407,7 +407,6 @@ class CQLHub {
                 this.applySorting();
                 this.populateFiltersFromAllQueries();
                 this.displayQueries();
-                this.showToast('Using cached queries. Live refresh failed.', 'error', 5000);
                 return;
             }
 
@@ -419,7 +418,6 @@ class CQLHub {
                 this.applySorting();
                 this.populateFiltersFromAllQueries();
                 this.displayQueries();
-                this.showToast('Loaded cached queries. Live refresh failed.', 'error', 5000);
                 return;
             }
 
@@ -2397,7 +2395,6 @@ class CQLHub {
                 this.isUsingCachedLookupFiles = true;
                 this.buildCrossReferences();
                 this.displayLookupFiles();
-                this.showToast('Using cached lookup files. Live refresh failed.', 'error', 5000);
                 return;
             }
 
@@ -2408,7 +2405,6 @@ class CQLHub {
                 this.isUsingCachedLookupFiles = true;
                 this.buildCrossReferences();
                 this.displayLookupFiles();
-                this.showToast('Loaded cached lookup files. Live refresh failed.', 'error', 5000);
                 return;
             }
 
@@ -2734,29 +2730,7 @@ class CQLHub {
     }
 
     updateCachedDataBanner() {
-        const shouldShow = this.isUsingCachedQueries || this.isUsingCachedLookupFiles;
-        let banner = document.getElementById('cachedDataBanner');
-
-        if (!shouldShow) {
-            if (banner) banner.remove();
-            return;
-        }
-
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'cachedDataBanner';
-            banner.className = 'cached-data-banner';
-            const mainContainer = document.querySelector('.maincontainer');
-            const header = document.querySelector('header');
-            if (mainContainer && header) {
-                mainContainer.insertBefore(banner, header.nextSibling);
-            }
-        }
-
-        const datasets = [];
-        if (this.isUsingCachedQueries) datasets.push('queries');
-        if (this.isUsingCachedLookupFiles) datasets.push('lookup files');
-        banner.textContent = `Showing cached ${datasets.join(' and ')} while the live refresh is unavailable.`;
+        document.getElementById('cachedDataBanner')?.remove();
     }
 
     // Lookup Pagination Methods

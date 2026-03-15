@@ -453,18 +453,6 @@ audio, canvas, embed, iframe, img, object, svg, video {
     border: 1px solid var(--br-border-color);
 }
 
-.cached-data-banner {
-    margin: 1rem auto 0;
-    max-width: 1200px;
-    padding: 0.85rem 1rem;
-    border: 1px solid rgba(118, 206, 43, 0.45);
-    border-radius: 10px;
-    background: linear-gradient(180deg, rgba(15, 20, 12, 0.95) 0%, rgba(10, 14, 9, 0.98) 100%);
-    color: #d7dfd0;
-    font-size: 0.95rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
 .results-header {
     display: flex;
     justify-content: space-between;
