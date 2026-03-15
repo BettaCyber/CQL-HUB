@@ -1,0 +1,5 @@
+window.APP_CONFIG = {
+    API_BASE_URL: "${API_BASE_URL}",
+    GITHUB_REPO_URL: "${GITHUB_REPO_URL}",
+    COMPANY_URL: "${COMPANY_URL}"
+};

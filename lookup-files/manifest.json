@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Generative-AI-Domains.csv",
+    "description": "A list of generative AI domains"
+  },
+  {
+    "name": "tor-exit-nodes.csv",
+    "description": "Tor exit nodes"
+  },
+  {
+    "name": "aws-ip-ranges-ipv6.csv",
+    "description": "AWS IPv6 IP ranges"
+  },
+  {
+    "name": "aws-ip-ranges-ipv4.csv",
+    "description": "AWS IPv4 IP ranges"
+  },
+  {
+    "name": "gcp-ip-ranges-ipv4.csv",
+    "description": "Google Cloud IPv4 IP ranges"
+  },
+  {
+    "name": "gcp-ip-ranges-ipv6.csv",
+    "description": "Google Cloud IPv6 IP ranges"
+  },
+  {
+    "name": "oracle-ip-ranges.csv",
+    "description": "Oracle Cloud IP ranges"
+  },
+  {
+    "name": "cloudflare-ip-ranges-ipv4.csv",
+    "description": "Cloudflare IPv4 IP ranges"
+  },
+  {
+    "name": "cloudflare-ip-ranges-ipv6.csv",
+    "description": "Cloudflare IPv6 IP ranges"
+  },
+  {
+    "name": "fastly-ip-ranges-ipv4.csv",
+    "description": "Fastly IPv4 IP ranges"
+  },
+  {
+    "name": "fastly-ip-ranges-ipv6.csv",
+    "description": "Fastly IPv6 IP ranges"
+  },
+  {
+    "name": "lolbas-binary-context.csv",
+    "description": "Serves as a mapping reference for the LOLBAS project (lolbas-project.github.io)."
+  }
+]

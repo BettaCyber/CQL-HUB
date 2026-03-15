@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: cql-hub-backend
+    env_file:
+      - .env
+    ports:
+      - "${API_PORT:-8002}:8002"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health').read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: cql-hub-frontend
+    environment:
+      API_BASE_URL: "http://localhost:${API_PORT:-8002}"
+      GITHUB_REPO_URL: "https://github.com/${GITHUB_OWNER:-Betta_Cyber}/${GITHUB_REPO:-CQL-HUB}"
+      COMPANY_URL: "${APP_COMPANY_URL:-https://betta.gp}"
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy

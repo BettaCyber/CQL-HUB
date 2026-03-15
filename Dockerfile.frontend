@@ -1,0 +1,9 @@
+FROM nginx:alpine
+
+RUN apk add --no-cache gettext
+
+COPY frontend /usr/share/nginx/html
+COPY frontend/docker-entrypoint.sh /docker-entrypoint.d/40-config.sh
+RUN chmod +x /docker-entrypoint.d/40-config.sh
+
+EXPOSE 80

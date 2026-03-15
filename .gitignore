@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+backend/.venv/
+dist/
+build/
+.vscode/
+CQL-HUB-legacy/
+Query-Hub-main/
+Query-Hub-main.zip
+cdn.jsdelivr.net/

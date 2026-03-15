@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from cql-hub.com/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 15 Mar 2026 12:06:50 GMT -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CQL Hub - Betta_Cyber Query Library</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="hintergrundfarben">
+        <div class="farbe1"></div>
+        <div class="farbe2"></div>
+        <div class="farbe3"></div>
+    </div>
+    <div class="maincontainer z-10">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-logo">
+                    <div class="header-logo-icon"></div>
+                    <div class="header-logo-text">
+                        <h1>CQL Hub</h1>
+                        <h2>CrowdStrike Query Library</h2>
+                    </div>
+                </div>
+                <nav class="header-nav">
+                    <button class="nav-tab active" data-view="queries">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                        <span>Queries</span>
+                    </button>
+                    <button class="nav-tab" data-view="lookups">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 18v-1"></path><path d="M14 18v-3"></path><path d="M18 18v-5"></path></svg>
+                        <span>Lookup Files</span>
+                    </button>
+                </nav>
+                <div class="header-actions">
+                    <a href="https://github.com/Betta_Cyber/CQL-HUB" target="_blank" rel="noopener noreferrer" class="github-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-github" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+                    </a>
+                    <button id="yamlBuilderButton" class="yaml-builder-btn">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus relative z-10" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                            <span>Contribute</span>
+                        </div>
+                    </button>
+                    <a href="https://betta.gp" target="_blank" rel="noopener noreferrer" class="help-btn">
+                        <span>Need help?</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+                <div class="header-text">
+                    <h1>CQL Hub - Betta_Cyber Query Library</h1>
+                    <p>Open library of detection & hunting queries for Falcon NextGen SIEM and LogScale.</p>
+                    <div class="betta-powered"><span>Powered by</span><a href="https://betta.gp" target="_blank" rel="noopener noreferrer"><img src="logo.svg" alt="Betta_Cyber Logo" class="betta-logo"></a></div>
+                    
+                </div>
+    <main class="container z-40">
+        <div id="queriesView" class="view-section active">
+        <section class="search-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search queries by name, description, tags, or MITRE ID...">
+                <button id="searchButton">Search</button>
+                <button id="clearFilters">Clear All Filters</button>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="tagFilter">Filter by Tag:</label>
+                    <div class="custom-select">
+                        <div class="select-button" id="tagFilterButton">
+                            <span class="select-text">All Tags</span>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                        <div class="select-dropdown" id="tagFilterDropdown">
+                            <!-- Options will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="mitreIdFilter">Filter by MITRE ID:</label>
+                    <div class="custom-select">
+                        <div class="select-button" id="mitreIdFilterButton">
+                            <span class="select-text">All MITRE IDs</span>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                        <div class="select-dropdown" id="mitreIdFilterDropdown">
+                            <!-- Options will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="logSourceFilter">Filter by Log Source:</label>
+                    <div class="custom-select">
+                        <div class="select-button" id="logSourceFilterButton">
+                            <span class="select-text">All Log Sources</span>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                        <div class="select-dropdown" id="logSourceFilterDropdown">
+                            <!-- Options will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="csRequiredModulesFilter">Filter by Required Module:</label>
+                    <div class="custom-multiselect">
+                        <div class="multiselect-button" id="csRequiredModulesButton">
+                            <span class="multiselect-text">All Modules</span>
+                            <span class="multiselect-arrow">▼</span>
+                        </div>
+                        <div class="multiselect-dropdown" id="csRequiredModulesDropdown">
+                            <!-- Checkbox options will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section z-40">
+            <div class="results-header">
+                <div class="results-info">
+                    <span id="resultsCount">0 queries found</span>
+                    <div class="per-page-control">
+                        <label for="perPageSelect">Show:</label>
+                        <div class="custom-select">
+                            <div class="select-button" id="perPageSelectButton">
+                                <span class="select-text">12 per page</span>
+                                <span class="select-arrow">▼</span>
+                            </div>
+                            <div class="select-dropdown" id="perPageSelectDropdown">
+                                <div class="select-option" data-value="4">4 per page</div>
+                                <div class="select-option" data-value="8">8 per page</div>
+                                <div class="select-option selected" data-value="12">12 per page</div>
+                                <div class="select-option" data-value="16">16 per page</div>
+                                <div class="select-option" data-value="all">All</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="sortSelect">Sort by:</label>
+                    <div class="custom-select">
+                        <div class="select-button" id="sortSelectButton">
+                            <span class="select-text">Created (newest first)</span>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                        <div class="select-dropdown" id="sortSelectDropdown">
+                            <div class="select-option selected" data-value="desc">Created (newest first)</div>
+                            <div class="select-option" data-value="asc">Created (oldest first)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="falconRegionFilter">Falcon Region:</label>
+                    <div class="custom-select">
+                        <div class="select-button" id="falconRegionFilterButton">
+                            <span class="select-text">Select Region</span>
+                            <span class="select-arrow">▼</span>
+                        </div>
+                        <div class="select-dropdown" id="falconRegionFilterDropdown">
+                            <div class="select-option selected" data-value="">Select Region</div>
+                            <div class="select-option" data-value="US1">US1</div>
+                            <div class="select-option" data-value="US2">US2</div>
+                            <div class="select-option" data-value="EU1">EU1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="queryResults" class="query-grid">
+                <!-- Query cards will be populated by JavaScript -->
+            </div>
+            
+            <div id="paginationContainer" class="pagination-container" style="display: none;">
+                <div class="pagination-info">
+                    <span id="paginationInfo">Showing 1-12 of 50 queries</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="firstPageBtn" class="pagination-btn" disabled>&laquo; First</button>
+                    <button id="prevPageBtn" class="pagination-btn" disabled>&lt; Previous</button>
+                    <div id="pageNumbers" class="page-numbers"></div>
+                    <button id="nextPageBtn" class="pagination-btn">Next &gt;</button>
+                    <button id="lastPageBtn" class="pagination-btn">Last &raquo;</button>
+                </div>
+            </div>
+        </section>
+        </div>
+
+        <div id="lookupsView" class="view-section">
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="lookupSearchInput" placeholder="Search lookup files by name, description, or column names...">
+                    <button id="lookupSearchButton">Search</button>
+                    <button id="lookupClearFilters">Clear Search</button>
+                </div>
+            </section>
+
+            <section class="results-section z-40">
+                <div class="results-header">
+                    <div class="results-info">
+                        <span id="lookupResultsCount">0 lookup files found</span>
+                        <div class="per-page-control">
+                            <label>Show:</label>
+                            <div class="custom-select">
+                                <div class="select-button" id="lookupPerPageSelectButton">
+                                    <span class="select-text">12 per page</span>
+                                    <span class="select-arrow">&#9660;</span>
+                                </div>
+                                <div class="select-dropdown" id="lookupPerPageSelectDropdown">
+                                    <div class="select-option" data-value="4">4 per page</div>
+                                    <div class="select-option" data-value="8">8 per page</div>
+                                    <div class="select-option selected" data-value="12">12 per page</div>
+                                    <div class="select-option" data-value="16">16 per page</div>
+                                    <div class="select-option" data-value="all">All</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lookupResults" class="query-grid">
+                    <!-- Lookup file cards will be populated by JavaScript -->
+                </div>
+
+                <div id="lookupPaginationContainer" class="pagination-container" style="display: none;">
+                    <div class="pagination-info">
+                        <span id="lookupPaginationInfo">Showing 1-12 of 50 files</span>
+                    </div>
+                    <div class="pagination-controls">
+                        <button id="lookupFirstPageBtn" class="pagination-btn" disabled>&laquo; First</button>
+                        <button id="lookupPrevPageBtn" class="pagination-btn" disabled>&lt; Previous</button>
+                        <div id="lookupPageNumbers" class="page-numbers"></div>
+                        <button id="lookupNextPageBtn" class="pagination-btn">Next &gt;</button>
+                        <button id="lookupLastPageBtn" class="pagination-btn">Last &raquo;</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal for query details -->
+    <div id="queryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 id="modalTitle"></h2>
+                    <div id="modalAuthor" class="modal-author"></div>
+                </div>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modalMitreIds" class="modal-mitre-ids"></div>
+                <div id="modalDescription" class="modal-description"></div>
+                <div id="modalCode" class="modal-code"></div>
+                <div id="modalLookupFiles" class="modal-lookup-files"></div>
+                <div id="modalExplanation" class="modal-explanation"></div>
+                <div id="modalTags" class="modal-tags"></div>
+                <div id="modalLogSources" class="modal-log-sources"></div>
+                <div id="modalRequiredModules" class="modal-required-modules"></div>
+                <div id="modalMeta" class="modal-meta"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for YAML Builder -->
+    <div id="yamlBuilderModal" class="modal">
+        <div class="modal-content yaml-builder-modal">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2>Contribute</h2>
+                </div>
+                <span class="close yaml-builder-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="contribute-tabs">
+                    <button class="contribute-tab active" data-tab="query">Query</button>
+                    <button class="contribute-tab" data-tab="lookup">Lookup File</button>
+                </div>
+
+                <!-- Query Contribution Tab -->
+                <div id="contributeQueryTab">
+                    <div class="contribution-guideline">
+                        <h3>How to Contribute:</h3>
+                        <p>Want to share your own query?</p>
+                        <ul>
+                            <li>Use this form to create a new query.</li>
+                            <li>Click <strong>Submit Query</strong> to send it directly for review, or <strong>Download YAML</strong> to submit it manually via a <a href="https://github.com/Betta_Cyber/CQL-HUB" target="_blank" rel="noopener noreferrer">GitHub Pull Request</a>.</li>
+                            <li>After approval, your query will appear here on CQL Hub.</li>
+                        </ul>
+                    </div>
+                    <form id="yamlBuilderForm" class="yaml-form">
+                        <div class="form-meta">
+                            <div>
+
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlName">Name *</label>
+                                <input type="text" id="yamlName" name="name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlAuthor">Author *</label>
+                                <input type="text" id="yamlAuthor" name="author" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlContact">Contact</label>
+                                <input type="text" id="yamlContact" name="contact" placeholder="Email or GitHub handle (optional)">
+                                <small class="form-help">Contact information will not be shared publicly and is only used to reach out if we have questions.</small>
+                            </div>
+                            <div class="form-group privacy-consent" id="queryPrivacyConsent" style="display: none;">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="queryPrivacyCheckbox">
+                                    <span class="checkmark"></span>
+                                    <span>I agree to the <a href="https://betta.gp" target="_blank" rel="noopener noreferrer">Privacy Policy</a></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlMitreIds">MITRE ATT&CK IDs</label>
+                                <input type="text" id="yamlMitreIds" name="mitre_ids" placeholder="e.g. T1055, T1059.001">
+                                <small class="form-help">Separate multiple MITRE IDs with commas</small>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlDescription">Description *</label>
+                                <textarea id="yamlDescription" name="description" rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="yamlCql">CQL Query *</label>
+                                <textarea id="yamlCql" name="cql" rows="6" required placeholder="Enter your CQL query here..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <div class="explanation-header">
+                                    <label for="yamlExplanation">Explanation</label>
+                                    <button type="button" id="previewMarkdownButton" class="preview-button">Preview Markdown</button>
+                                </div>
+                                <textarea id="yamlExplanation" name="explanation" rows="5" placeholder="Provide a detailed explanation of the query (supports Markdown)..."></textarea>
+                                <div id="markdownPreview" class="markdown-preview" style="display: none;"></div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="checkbox-all">
+                            <div class="form-section">
+                            <div class="form-group">
+                                <label>Tags</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="tags" value="Hunting">
+                                        <span class="checkmark"></span>
+                                        Hunting
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="tags" value="Monitoring">
+                                        <span class="checkmark"></span>
+                                        Monitoring
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="tags" value="Detection">
+                                        <span class="checkmark"></span>
+                                        Detection
+                                    </label>
+                                </div>
+                            </div>
+                            </div>
+
+                            <div class="form-section">
+                            <div class="form-group">
+                                <label>Log Sources</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Endpoint">
+                                        <span class="checkmark"></span>
+                                        Endpoint
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Network">
+                                        <span class="checkmark"></span>
+                                        Network
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Identity">
+                                        <span class="checkmark"></span>
+                                        Identity
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Cloud">
+                                        <span class="checkmark"></span>
+                                        Cloud
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Mail">
+                                        <span class="checkmark"></span>
+                                        Mail
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="log_sources" value="Other">
+                                        <span class="checkmark"></span>
+                                        Other
+                                    </label>
+                                </div>
+                            </div>
+                            </div>
+
+                            <div class="form-section">
+                            <div class="form-group">
+                                <label>Required Modules</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="Insight">
+                                        <span class="checkmark"></span>
+                                        Insight
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="Identity">
+                                        <span class="checkmark"></span>
+                                        Identity
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="Spotlight">
+                                        <span class="checkmark"></span>
+                                        Spotlight
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="CSPM / ASPM / DSPM">
+                                        <span class="checkmark"></span>
+                                        CSPM / ASPM / DSPM
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="Data Protection">
+                                        <span class="checkmark"></span>
+                                        Data Protection
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="cs_required_modules" value="IT Automation">
+                                        <span class="checkmark"></span>
+                                        IT Automation
+                                    </label>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="form-actions-left">
+                                <button type="button" id="downloadYamlButton" class="download-button">Download YAML</button>
+                                <button type="reset" class="reset-button">Clear Form</button>
+                            </div>
+                            <button type="button" id="submitQueryButton" class="submit-button">Submit Query</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Lookup File Contribution Tab -->
+                <div id="contributeLookupTab" style="display: none;">
+                    <div class="contribution-guideline">
+                        <h3>How to Contribute:</h3>
+                        <p>Want to share a lookup file?</p>
+                        <ul>
+                            <li>Upload a CSV file that can be used with CQL's <code>match()</code> function.</li>
+                            <li>Please make sure to name the file according to its' use case.</li>
+                            <li>Click <strong>Submit Lookup File</strong> to send it for review.</li>
+                            <li>After approval, the file will be available on CQL Hub for use in queries.</li>
+                        </ul>
+                    </div>
+                    <form id="lookupBuilderForm" class="yaml-form">
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label>CSV File *</label>
+                                <div class="csv-upload-zone" id="csvUploadZone">
+                                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                                    <div class="csv-upload-placeholder" id="csvUploadPlaceholder">
+                                        <p>Click to select or drag & drop a CSV file</p>
+                                        <small>Maximum file size: 5 MB</small>
+                                    </div>
+                                    <div class="csv-file-info" id="csvFileInfo" style="display: none;">
+                                        <span id="csvFileName"></span>
+                                        <span id="csvFileSize"></span>
+                                        <button type="button" id="csvRemoveBtn" class="csv-remove-btn">&times;</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="csvPreviewSection" style="display: none;">
+                            <div class="form-section">
+                                <div class="form-group">
+                                    <label>Preview</label>
+                                    <div class="csv-preview-container" id="csvPreviewContainer"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="lookupDescription">Description *</label>
+                                <input type="text" id="lookupDescription" name="description" required placeholder="Describe what this lookup file contains...">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="lookupAuthor">Author *</label>
+                                <input type="text" id="lookupAuthor" name="author" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="lookupContact">Contact</label>
+                                <input type="text" id="lookupContact" name="contact" placeholder="Email or GitHub handle (optional)">
+                                <small class="form-help">Contact information will not be shared publicly and is only used to reach out if we have questions.</small>
+                            </div>
+                            <div class="form-group privacy-consent" id="lookupPrivacyConsent" style="display: none;">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="lookupPrivacyCheckbox">
+                                    <span class="checkmark"></span>
+                                    <span>I agree to the <a href="https://betta.gp" target="_blank" rel="noopener noreferrer">Privacy Policy</a></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="form-actions-left">
+                                <button type="reset" class="reset-button" id="lookupResetBtn">Clear Form</button>
+                            </div>
+                            <button type="button" id="submitLookupButton" class="submit-button">Submit Lookup File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for lookup file details -->
+    <div id="lookupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 id="lookupModalTitle"></h2>
+                </div>
+                <span class="close lookup-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="lookupModalDescription" class="modal-description"></div>
+                <div id="lookupModalColumns" class="modal-section"></div>
+                <div id="lookupModalStats" class="modal-meta"></div>
+                <div id="lookupModalReferencedBy" class="modal-section"></div>
+                <div id="lookupModalPreview" class="modal-section"></div>
+                <div id="lookupModalActions" class="modal-actions"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="z-40">
+        <div class="container">
+            <p>&copy; 2026 <a href="https://betta.gp" target="_blank" rel="noopener noreferrer">Betta_Cyber</a>. Built for the security community.</p>
+        </div>
+    </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@14.1.2/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.0/dist/purify.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+<!-- Mirrored from cql-hub.com/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 15 Mar 2026 12:06:55 GMT -->
+</html>
