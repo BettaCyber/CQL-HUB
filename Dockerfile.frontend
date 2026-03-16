@@ -3,6 +3,7 @@ FROM nginx:alpine
 RUN apk add --no-cache gettext
 
 COPY frontend /usr/share/nginx/html
+COPY frontend/nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY frontend/docker-entrypoint.sh /docker-entrypoint.d/40-config.sh
 RUN chmod +x /docker-entrypoint.d/40-config.sh
 

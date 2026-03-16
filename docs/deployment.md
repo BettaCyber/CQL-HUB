@@ -64,7 +64,8 @@ SYNC_FROM_GITHUB=true
 SYNC_INTERVAL_SECONDS=3600
 API_PORT=8002
 FRONTEND_PORT=8080
-API_BASE_URL=http://localhost:8002
+API_BASE_URL=/api
+API_PROXY_TARGET=http://backend:8002
 CACHE_TTL_SECONDS=600
 ALLOWED_ORIGINS=*
 ```
@@ -74,6 +75,8 @@ Run:
 ```powershell
 docker compose up --build
 ```
+
+In the Docker deployment, the frontend container now proxies `/api/*` to the backend container through Nginx. This is the recommended remote-host setup because the browser talks to the same frontend origin instead of trying to connect to `localhost:8002`.
 
 ## Backend Hosting for Amplify Frontends
 
